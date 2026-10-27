@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Les Délices de Maman | المنيو الإلكتروني التفاعلي</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Cairo -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            dark: '#1a120b',
+                            card: '#291d12',
+                            gold: '#d4af37',
+                            accent: '#e63946',
+                            light: '#fdfbf7'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Cairo', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #120a06;
+            color: #fdfbf7;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-brand-dark min-h-screen pb-32">
+
+    <!-- Header Section -->
+    <header class="relative bg-gradient-to-b from-black via-brand-card to-brand-dark border-b border-brand-gold/20 pt-8 pb-6 px-4 shadow-xl text-center">
+        <div class="max-w-2xl mx-auto">
+            <div class="inline-block bg-brand-gold/10 border border-brand-gold/30 rounded-full px-4 py-1 text-xs text-brand-gold font-semibold mb-3 tracking-wide">
+                <i class="fa-solid fa-utensils ml-1"></i> المنيو الرسمي الفاخر
+            </div>
+            <h1 class="text-3xl md:text-4xl font-black text-brand-light tracking-tight mb-1">
+                Les Délices de Maman
+            </h1>
+            <p class="text-sm md:text-base text-brand-gold italic font-medium">
+                "Le goût du bonheur" ❤️
+            </p>
+        </div>
+    </header>
+
+    <!-- Search & Filters Section -->
+    <div class="sticky top-0 z-30 bg-brand-dark/95 backdrop-blur-md pt-4 pb-3 px-4 border-b border-brand-card shadow-md">
+        <div class="max-w-2xl mx-auto space-y-3">
+            <div class="relative">
+                <span class="absolute inset-y-0 right-0 flex items-center pr-3.5 pointer-events-none text-gray-400">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </span>
+                <input type="text" id="searchInput" oninput="filterItems()" placeholder="ابحث عن أكلتك المفضلة (شاورما، بيتزا، برگر...)" 
+                    class="w-full bg-brand-card text-brand-light placeholder-gray-400 text-sm rounded-xl pr-10 pl-4 py-3 border border-brand-gold/20 focus:outline-none focus:border-brand-gold shadow-inner transition-all">
+            </div>
+
+            <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1" id="categoryFilters">
+                <button onclick="setCategory('all')" data-category="all" class="cat-btn whitespace-nowrap px-4 py-2 rounded-xl text-xs font-bold bg-brand-gold text-brand-dark shadow-md transition-all">
+                    الكل 🔥
+                </button>
+                <button onclick="setCategory('ساندويتشات')" data-category="ساندويتشات" class="cat-btn whitespace-nowrap px-4 py-2 rounded-xl text-xs font-bold bg-brand-card text-gray-300 border border-brand-gold/20 hover:border-brand-gold transition-all">
+                    ساندويتشات 🌯
+                </button>
+                <button onclick="setCategory('مقبلات')" data-category="مقبلات" class="cat-btn whitespace-nowrap px-4 py-2 rounded-xl text-xs font-bold bg-brand-card text-gray-300 border border-brand-gold/20 hover:border-brand-gold transition-all">
+                    مقبلات وفطائر 🥟
+                </button>
+                <button onclick="setCategory('وجبات سريعة')" data-category="وجبات سريعة" class="cat-btn whitespace-nowrap px-4 py-2 rounded-xl text-xs font-bold bg-brand-card text-gray-300 border border-brand-gold/20 hover:border-brand-gold transition-all">
+                    وجبات سريعة 🍔
+                </button>
+                <button onclick="setCategory('بيتزا')" data-category="بيتزا" class="cat-btn whitespace-nowrap px-4 py-2 rounded-xl text-xs font-bold bg-brand-card text-gray-300 border border-brand-gold/20 hover:border-brand-gold transition-all">
+                    بيتزا فاخرة 🍕
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Menu Items Grid Container -->
+    <main class="max-w-2xl mx-auto px-4 mt-6">
+        <div id="menuGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <!-- Items generated dynamically -->
+        </div>
+        
+        <div id="noResults" class="hidden text-center py-16">
+            <i class="fa-solid fa-face-frown text-4xl text-gray-500 mb-3"></i>
+            <p class="text-gray-400 font-medium">عذراً، لم نجد أي صنف يطابق بحثك!</p>
+        </div>
+    </main>
+
+    <!-- Floating Cart Bar -->
+    <div id="floatingCart" class="fixed bottom-0 left-0 right-0 z-40 p-4 bg-gradient-to-t from-black via-brand-dark/95 to-transparent transition-transform duration-300 translate-y-full">
+        <div class="max-w-2xl mx-auto bg-gradient-to-r from-brand-gold to-amber-600 rounded-2xl p-4 shadow-2xl flex items-center justify-between text-brand-dark cursor-pointer hover:brightness-105 transition-all" onclick="openCartModal()">
+            <div class="flex items-center gap-3">
+                <div class="bg-brand-dark text-brand-gold w-10 h-10 rounded-xl flex items-center justify-center font-black text-base shadow-inner" id="cartCountBadge">
+                    0
+                </div>
+                <div>
+                    <h4 class="font-black text-sm tracking-wide text-brand-dark">سلة المشتريات الخاصة بك</h4>
+                    <p class="text-xs font-bold text-brand-dark/80" id="cartSummaryText">أضف أصناف لبدء الطلب</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 bg-brand-dark text-brand-light px-4 py-2.5 rounded-xl font-bold text-sm shadow-md">
+                <span>عرض السلة</span>
+                <i class="fa-solid fa-arrow-left text-xs"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Modal Overlay -->
+    <div id="cartModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-brand-card w-full max-w-lg rounded-t-3xl sm:rounded-3xl border border-brand-gold/30 shadow-2xl max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in duration-200">
+            
+            <div class="p-4 border-b border-brand-gold/20 flex items-center justify-between bg-black/40">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-basket-shopping text-brand-gold text-lg"></i>
+                    <h3 class="font-bold text-brand-light text-base">مراجعة وإرسال الطلب</h3>
+                </div>
+                <button onclick="closeCartModal()" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-gray-300 hover:bg-white/20 transition-all">
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+            </div>
+
+            <div class="p-4 overflow-y-auto space-y-4 flex-1">
+                <div id="cartItemsList" class="space-y-3"></div>
+
+                <div class="pt-3 border-t border-brand-gold/20">
+                    <label class="block text-xs font-bold text-brand-gold mb-2">اختر نوع الاستلام:</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button type="button" id="typeDineIn" onclick="setOrderType('dine-in')" class="py-2.5 px-3 rounded-xl text-xs font-bold border border-brand-gold bg-brand-gold text-brand-dark transition-all flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-utensils"></i> داخل المطعم
+                        </button>
+                        <button type="button" id="typeDelivery" onclick="setOrderType('delivery')" class="py-2.5 px-3 rounded-xl text-xs font-bold border border-brand-gold/30 bg-brand-dark text-gray-300 transition-all flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-motorcycle"></i> توصيل للمنزل
+                        </button>
+                    </div>
+                </div>
+
+                <div id="dineInFields" class="space-y-2">
+                    <label class="block text-xs text-gray-300 font-semibold">رقم الطاولة:</label>
+                    <input type="text" id="tableNumber" placeholder="مثال: الطاولة رقم 05" class="w-full bg-brand-dark text-brand-light placeholder-gray-500 text-sm rounded-xl px-3.5 py-2.5 border border-brand-gold/20 focus:outline-none focus:border-brand-gold">
+                </div>
+
+                <div id="deliveryFields" class="space-y-3 hidden">
+                    <div>
+                        <label class="block text-xs text-gray-300 font-semibold mb-1">الاسم الكامل:</label>
+                        <input type="text" id="custName" placeholder="أدخل اسمك الكريم" class="w-full bg-brand-dark text-brand-light placeholder-gray-500 text-sm rounded-xl px-3.5 py-2.5 border border-brand-gold/20 focus:outline-none focus:border-brand-gold">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-300 font-semibold mb-1">رقم الهاتف:</label>
+                        <input type="tel" id="custPhone" placeholder="مثال: 0550000000" class="w-full bg-brand-dark text-brand-light placeholder-gray-500 text-sm rounded-xl px-3.5 py-2.5 border border-brand-gold/20 focus:outline-none focus:border-brand-gold">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-300 font-semibold mb-1">عنوان التوصيل:</label>
+                        <textarea id="custAddress" rows="2" placeholder="الولاية، الحي، ومعالم مفصلة..." class="w-full bg-brand-dark text-brand-light placeholder-gray-500 text-sm rounded-xl px-3.5 py-2.5 border border-brand-gold/20 focus:outline-none focus:border-brand-gold"></textarea>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs text-gray-300 font-semibold mb-1">ملاحظات إضافية (اختياري):</label>
+                    <input type="text" id="orderNotes" placeholder="بدون بصل، صوص زيادة..." class="w-full bg-brand-dark text-brand-light placeholder-gray-500 text-sm rounded-xl px-3.5 py-2.5 border border-brand-gold/20 focus:outline-none focus:border-brand-gold">
+                </div>
+            </div>
+
+            <div class="p-4 border-t border-brand-gold/20 bg-black/50 space-y-3">
+                <div class="flex items-center justify-between text-base font-bold">
+                    <span class="text-gray-300">الإجمالي الكلي:</span>
+                    <span id="modalTotalPrice" class="text-brand-gold text-lg font-black">0 FG</span>
+                </div>
+                <button onclick="sendToWhatsApp()" class="w-full bg-gradient-to-r from-emerald-600 to-green-500 hover:from-emerald-500 hover:to-green-400 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all">
+                    <i class="fa-brands fa-whatsapp text-xl"></i>
+                    <span>إرسال الطلب عبر واتساب</span>
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-emerald-600 text-white px-5 py-2.5 rounded-2xl shadow-xl text-xs font-bold transition-all duration-300 opacity-0 pointer-events-none flex items-center gap-2">
+        <i class="fa-solid fa-circle-check"></i>
+        <span id="toastMsg">تمت إضافة الصنف بنجاح</span>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Menu Data with actual exact dishes from the menu photo
+        const menuItems = [
+            {
+                id: 1,
+                name: "Chawarma",
+                category: "ساندويتشات",
+                price: 25000,
+                priceFormatted: "25.000 FG",
+                desc: "ساندويتش شاورما دجاج مشوي متبل بعناية مع صوص الثوم الكريمي والخضار الطازجة المقرمشة.",
+                image: "https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?w=600&auto=format&fit=crop&q=80"
+            },
+            {
+                id: 2,
+                name: "Pastel (3 pièces)",
+                category: "مقبلات",
+                price: 25000,
+                priceFormatted: "25.000 FG",
+                desc: "ثلاث قطع من المعجنات الذهبية المقرمشة المحشوة بلحم متبل وخضار شهية تقدم ساخنة.",
+                image: "https://images.unsplash.com/photo-1541529086526-db283c563270?w=600&auto=format&fit=crop&q=80"
+            },
+            {
+                id: 3,
+                name: "Hamburger",
+                category: "وجبات سريعة",
+                price: 30000,
+                priceFormatted: "30.000 FG",
+                desc: "قرص لحم بقر غني ومشوي، جبن تشيدر ذائب، طماطم وخس طازج في خبز سمسم هش ومحمص.",
+                image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&auto=format&fit=crop&q=80"
+            },
+            {
+                id: 4,
+                name: "Fataya",
+                category: "مقبلات",
+                price: 20000,
+                priceFormatted: "20.000 FG",
+                desc: "فطائر ذهبية مقرمشة محشوة بلحم دافئ وبهارات عطرية تقدم بطعم وقرمشة لا تُقاوم.",
+                image: "https://images.unsplash.com/photo-1601050690597-df0568f70950?w=600&auto=format&fit=crop&q=80"
+            },
+            {
+                id: 5,
+                name: "Pizza poulet",
+                category: "بيتزا",
+                price: 70000,
+                priceFormatted: "70.000 FG",
+                desc: "عجينتنا الإيطالية الطرية مع صلصة طماطم غنية، قطع الدجاج المشوي، زيتون وموتزاريلا كثيفة.",
+                image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&auto=format&fit=crop&q=80"
+            },
+            {
+                id: 6,
+                name: "Pizza viande",
+                category: "بيتزا",
+                price: 80000,
+                priceFormatted: "80.000 FG",
+                desc: "تشكيلة لحوم متبلة فاخرة فوق طبقة جبن الموتزاريلا الذائب والصلصة الإيطالية المميزة.",
+                image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600&auto=format&fit=crop&q=80"
+            }
+        ];
+
+        let cart = {};
+        let currentCategory = 'all';
+        let orderType = 'dine-in';
+        const cashierPhone = "0553266871";
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderMenu();
+            updateCartUI();
+        });
+
+        function renderMenu() {
+            const grid = document.getElementById('menuGrid');
+            const searchVal = document.getElementById('searchInput').value.toLowerCase().trim();
+            const noResults = document.getElementById('noResults');
+
+            grid.innerHTML = '';
+
+            const filtered = menuItems.filter(item => {
+                const matchCat = currentCategory === 'all' || item.category === currentCategory;
+                const matchSearch = item.name.toLowerCase().includes(searchVal) || item.desc.toLowerCase().includes(searchVal);
+                return matchCat && matchSearch;
+            });
+
+            if (filtered.length === 0) {
+                noResults.classList.remove('hidden');
+                return;
+            } else {
+                noResults.classList.add('hidden');
+            }
+
+            filtered.forEach(item => {
+                const qty = cart[item.id] || 0;
+                const card = document.createElement('div');
+                card.className = "bg-brand-card rounded-2xl overflow-hidden border border-brand-gold/20 shadow-lg flex flex-col justify-between hover:border-brand-gold/50 transition-all";
+                card.innerHTML = `
+                    <div class="relative h-44 overflow-hidden bg-black/40">
+                        <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://placehold.co/400x300/291d12/d4af37?text=Maman'">
+                        <div class="absolute top-3 right-3 bg-brand-dark/90 backdrop-blur-md px-3 py-1 rounded-xl border border-brand-gold/30 text-brand-gold font-black text-xs shadow-md">
+                            ${item.priceFormatted}
+                        </div>
+                        <div class="absolute bottom-3 right-3 bg-black/70 backdrop-blur-md px-2.5 py-0.5 rounded-lg text-[10px] text-gray-300">
+                            ${item.category}
+                        </div>
+                    </div>
+                    <div class="p-4 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-bold text-brand-light text-base mb-1">${item.name}</h3>
+                            <p class="text-xs text-gray-400 line-clamp-2 leading-relaxed mb-4">${item.desc}</p>
+                        </div>
+                        <div class="flex items-center justify-between pt-3 border-t border-brand-gold/10">
+                            ${qty === 0 ? `
+                                <button onclick="updateQuantity(${item.id}, 1)" class="w-full bg-brand-gold hover:bg-amber-500 text-brand-dark font-bold text-xs py-2.5 px-4 rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-cart-plus"></i> إضافة للسلة
+                                </button>
+                            ` : `
+                                <div class="flex items-center justify-between w-full bg-brand-dark border border-brand-gold/30 rounded-xl p-1">
+                                    <button onclick="updateQuantity(${item.id}, -1)" class="w-8 h-8 rounded-lg bg-brand-card text-brand-gold flex items-center justify-center font-bold hover:bg-brand-gold hover:text-brand-dark transition-all">
+                                        <i class="fa-solid fa-minus text-xs"></i>
+                                    </button>
+                                    <span class="font-black text-brand-light text-sm px-4">${qty}</span>
+                                    <button onclick="updateQuantity(${item.id}, 1)" class="w-8 h-8 rounded-lg bg-brand-card text-brand-gold flex items-center justify-center font-bold hover:bg-brand-gold hover:text-brand-dark transition-all">
+                                        <i class="fa-solid fa-plus text-xs"></i>
+                                    </button>
+                                </div>
+                            `}
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function setCategory(cat) {
+            currentCategory = cat;
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                if (btn.getAttribute('data-category') === cat) {
+                    btn.className = "cat-btn whitespace-nowrap px-4 py-2 rounded-xl text-xs font-bold bg-brand-gold text-brand-dark shadow-md transition-all";
+                } else {
+                    btn.className = "cat-btn whitespace-nowrap px-4 py-2 rounded-xl text-xs font-bold bg-brand-card text-gray-300 border border-brand-gold/20 hover:border-brand-gold transition-all";
+                }
+            });
+            renderMenu();
+        }
+
+        function filterItems() {
+            renderMenu();
+        }
+
+        function updateQuantity(itemId, change) {
+            if (!cart[itemId]) cart[itemId] = 0;
+            cart[itemId] += change;
+            if (cart[itemId] <= 0) {
+                delete cart[itemId];
+            }
+            renderMenu();
+            updateCartUI();
+            
+            if (change > 0) {
+                showToast("تمت إضافة الصنف إلى السلة");
+            }
+        }
+
+        function updateCartUI() {
+            let totalItems = 0;
+            let totalPrice = 0;
+
+            for (const [id, qty] of Object.entries(cart)) {
+                const item = menuItems.find(i => i.id == id);
+                if (item) {
+                    totalItems += qty;
+                    totalPrice += item.price * qty;
+                }
+            }
+
+            const floatingCart = document.getElementById('floatingCart');
+            const cartCountBadge = document.getElementById('cartCountBadge');
+            const cartSummaryText = document.getElementById('cartSummaryText');
+
+            cartCountBadge.innerText = totalItems;
+
+            if (totalItems > 0) {
+                floatingCart.classList.remove('translate-y-full');
+                cartSummaryText.innerText = `${totalItems} أصناف | ${totalPrice.toLocaleString()} FG`;
+            } else {
+                floatingCart.classList.add('translate-y-full');
+            }
+
+            document.getElementById('modalTotalPrice').innerText = totalPrice.toLocaleString() + " FG";
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').innerText = msg;
+            toast.classList.remove('opacity-0', 'pointer-events-none');
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'pointer-events-none');
+            }, 2000);
+        }
+
+        function openCartModal() {
+            renderCartModalItems();
+            document.getElementById('cartModal').classList.remove('hidden');
+        }
+
+        function closeCartModal() {
+            document.getElementById('cartModal').classList.add('hidden');
+        }
+
+        function renderCartModalItems() {
+            const container = document.getElementById('cartItemsList');
+            container.innerHTML = '';
+
+            const keys = Object.keys(cart);
+            if (keys.length === 0) {
+                container.innerHTML = `<p class="text-center text-gray-400 text-xs py-6">سلة المشتريات فارغة حالياً.</p>`;
+                document.getElementById('modalTotalPrice').innerText = "0 FG";
+                return;
+            }
+
+            let totalPrice = 0;
+            keys.forEach(id => {
+                const item = menuItems.find(i => i.id == id);
+                const qty = cart[id];
+                const itemTotal = item.price * qty;
+                totalPrice += itemTotal;
+
+                const row = document.createElement('div');
+                row.className = "flex items-center justify-between bg-brand-dark/60 p-3 rounded-xl border border-brand-gold/10";
+                row.innerHTML = `
+                    <div class="flex-1 pr-2">
+                        <h4 class="font-bold text-xs text-brand-light">${item.name}</h4>
+                        <span class="text-[10px] text-brand-gold font-semibold">${item.priceFormatted} × ${qty}</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="font-bold text-xs text-brand-light">${itemTotal.toLocaleString()} FG</span>
+                        <div class="flex items-center gap-1 bg-brand-card border border-brand-gold/20 rounded-lg p-0.5">
+                            <button onclick="updateQuantity(${item.id}, -1); renderCartModalItems();" class="w-6 h-6 rounded bg-brand-dark text-brand-gold text-xs font-bold hover:bg-brand-gold hover:text-brand-dark">-</button>
+                            <span class="text-xs font-bold px-2 text-brand-light">${qty}</span>
+                            <button onclick="updateQuantity(${item.id}, 1); renderCartModalItems();" class="w-6 h-6 rounded bg-brand-dark text-brand-gold text-xs font-bold hover:bg-brand-gold hover:text-brand-dark">+</button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+
+            document.getElementById('modalTotalPrice').innerText = totalPrice.toLocaleString() + " FG";
+        }
+
+        function setOrderType(type) {
+            orderType = type;
+            const btnDineIn = document.getElementById('typeDineIn');
+            const btnDelivery = document.getElementById('typeDelivery');
+            const dineInFields = document.getElementById('dineInFields');
+            const deliveryFields = document.getElementById('deliveryFields');
+
+            if (type === 'dine-in') {
+                btnDineIn.className = "py-2.5 px-3 rounded-xl text-xs font-bold border border-brand-gold bg-brand-gold text-brand-dark transition-all flex items-center justify-center gap-2";
+                btnDelivery.className = "py-2.5 px-3 rounded-xl text-xs font-bold border border-brand-gold/30 bg-brand-dark text-gray-300 transition-all flex items-center justify-center gap-2";
+                dineInFields.classList.remove('hidden');
+                deliveryFields.classList.add('hidden');
+            } else {
+                btnDelivery.className = "py-2.5 px-3 rounded-xl text-xs font-bold border border-brand-gold bg-brand-gold text-brand-dark transition-all flex items-center justify-center gap-2";
+                btnDineIn.className = "py-2.5 px-3 rounded-xl text-xs font-bold border border-brand-gold/30 bg-brand-dark text-gray-300 transition-all flex items-center justify-center gap-2";
+                deliveryFields.classList.remove('hidden');
+                dineInFields.classList.add('hidden');
+            }
+        }
+
+        function sendToWhatsApp() {
+            const keys = Object.keys(cart);
+            if (keys.length === 0) {
+                alert("السلة فارغة، يرجى إضافة أصناف أولاً.");
+                return;
+            }
+
+            let orderDetailsText = "🍽️ *طلب جديد من مطعم Les Délices de Maman*\n\n";
+            orderDetailsText += `📍 *نوع الطلب:* ${orderType === 'dine-in' ? 'داخل المطعم' : 'توصيل للمنزل'}\n`;
+
+            if (orderType === 'dine-in') {
+                const tableNum = document.getElementById('tableNumber').value.trim();
+                if (!tableNum) {
+                    alert("يرجى إدخال رقم الطاولة.");
+                    return;
+                }
+                orderDetailsText += `🪑 *رقم الطاولة:* ${tableNum}\n`;
+            } else {
+                const name = document.getElementById('custName').value.trim();
+                const phone = document.getElementById('custPhone').value.trim();
+                const address = document.getElementById('custAddress').value.trim();
+                if (!name || !phone || !address) {
+                    alert("يرجى إكمال بيانات العميل والتوصيل.");
+                    return;
+                }
+                orderDetailsText += `👤 *الاسم:* ${name}\n`;
+                orderDetailsText += `📞 *الهاتف:* ${phone}\n`;
+                orderDetailsText += `🏠 *العنوان:* ${address}\n`;
+            }
+
+            const notes = document.getElementById('orderNotes').value.trim();
+            if (notes) {
+                orderDetailsText += `📝 *ملاحظات:* ${notes}\n`;
+            }
+
+            orderDetailsText += "\n🛒 *الأصناف المطلوبة:*\n";
+            let totalPrice = 0;
+
+            keys.forEach(id => {
+                const item = menuItems.find(i => i.id == id);
+                const qty = cart[id];
+                const itemTotal = item.price * qty;
+                totalPrice += itemTotal;
+                orderDetailsText += `• ${item.name} × ${qty} (${itemTotal.toLocaleString()} FG)\n`;
+            });
+
+            orderDetailsText += `\n💰 *الإجمالي الكلي:* *${totalPrice.toLocaleString()} FG*\n`;
+            orderDetailsText += "\n✨ شكراً لاختياركم Les Délices de Maman (Le goût du bonheur)!";
+
+            const encodedMessage = encodeURIComponent(orderDetailsText);
+            const whatsappUrl = `https://wa.me/${cashierPhone}?text=${encodedMessage}`;
+            window.open(whatsappUrl, '_blank');
+        }
+    </script>
+</body>
+</html>
